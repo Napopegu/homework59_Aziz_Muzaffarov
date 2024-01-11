@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Удаление задачи
+{% endblock %}
+
+{% block content %}
+   <h2>Вы действительно хотите удалить задачу "{{ issue.summary }}" ?</h2>
+    <div class="d-flex">
+    <form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">ДА</button>
+    </form>
+    <a href="{% url 'issue_view' issue.pk %}" class="btn btn-success ms-3">Нет</a>
+    </div>
+
+{% endblock %}
