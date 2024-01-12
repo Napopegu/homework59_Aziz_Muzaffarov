@@ -1,0 +1,43 @@
+/Users/azizmuzaffarov/Desktop/homework57/venv/bin/python /Applications/PyCharm.app/Contents/plugins/python/helpers/pydev/pydevconsole.py --mode=client --host=127.0.0.1 --port=60198
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+import django; print('Django %s' % django.get_version())
+sys.path.extend(['/Users/azizmuzaffarov/Desktop/homework57/source', '/Applications/PyCharm.app/Contents/plugins/python/helpers/pycharm', '/Applications/PyCharm.app/Contents/plugins/python/helpers/pydev'])
+if 'setup' in dir(django): django.setup()
+import django_manage_shell; django_manage_shell.run('/Users/azizmuzaffarov/Desktop/homework57/source')
+PyDev console: starting.
+Python 3.11.4 (v3.11.4:d2340ef257, Jun  6 2023, 19:15:51) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin
+Django 5.0.1
+from webapp.models import Issue
+from django.utils import timezone
+from datetime import timedelta
+timezone.now() - timedelta(days=30)
+datetime.datetime(2023, 12, 13, 7, 59, 29, 216641, tzinfo=datetime.timezone.utc)
+Issue.objects.filter(status__title='Done', updated_at__gte = (timezone.now() - timedelta(days=30)))
+<QuerySet [<Issue: 2. фыовдфовфы>]>
+Issue.objects.filter(status__title__in = ("Done", "New"), types__title__in = ("Bug","Task"))
+<QuerySet [<Issue: 2. фыовдфовфы>, <Issue: 3. Первая задача>]>
+from django.db.models import Q
+Issue.objects.exclude(status__title='Done').filter(Q(summary__icontains='bug') | Q(description__icontains='bug') | Q(types__title='Big'))
+<QuerySet []>
+Issue.objects.exclude(status__title='Done').filter(Q(summary__icontains='bug') | Q(description__icontains='bug') | Q(types__title='Big'))
+<QuerySet []>
+Issue.objects.exclude(status__title='Done').filter(Q(summary__icontains='bug') | Q(description__icontains='bug') | Q(types__title='Bug'))
+<QuerySet [<Issue: 4. задача2>]>
+Issue.objects.exclude(status__title='Done').filter(Q(summary__icontains='bug') | Q(description__icontains='bug') | Q(types__title='Bug'))
+<QuerySet [<Issue: 4. task2>]>
+Issue.objects.exclude(status__title='Done').filter(Q(summary__icontains='bug') | Q(description__icontains='bug') | Q(types__title='Bug'))
+<QuerySet [<Issue: 4. task2>, <Issue: 5. task3>, <Issue: 5. task3>, <Issue: 6. BUG 312>]>
+Issue.objects.exclude(status__title='Done').filter(Q(summary__icontains='bug') | Q(description__icontains='bug') | Q(types__title='Bug')).distinct()
+<QuerySet [<Issue: 4. task2>, <Issue: 5. task3>, <Issue: 6. BUG 312>]>
+
+Issue.objects.values('id', 'summary', 'types__title', 'status__title')
+<QuerySet [{'id': 2, 'summary': 'фыовдфовфы', 'types__title': 'Bug', 'status__title': 'Done'}, {'id': 3, 'summary': 'Первая задача', 'types__title': 'Task', 'status__title': 'New'}, {'id': 3, 'summary': 'Первая задача', 'types__title': 'Enhancement', 'status__title': 'New'}, {'id': 4, 'summary': 'task2', 'types__title': 'Task', 'status__title': 'In Progress'}, {'id': 4, 'summary': 'task2', 'types__title': 'Bug', 'status__title': 'In Progress'}, {'id': 4, 'summary': 'task2', 'types__title': 'Enhancement', 'status__title': 'In Progress'}, {'id': 5, 'summary': 'task3', 'types__title': 'Task', 'status__title': 'New'}, {'id': 5, 'summary': 'task3', 'types__title': 'Enhancement', 'status__title': 'New'}, {'id': 6, 'summary': 'BUG 312', 'types__title': 'Task', 'status__title': 'In Progress'}]>
+from django.db.models import F
+Issue.objects.filter(summary=F('description'))
+<QuerySet []>
+Issue.objects.filter(summary=F('description'))
+<QuerySet [<Issue: 7. qwe 123>]>
+from django.db.models import Count
+from webapp.models import Type
+Type.objects.annotate(Count('issues')).values('title','issues__count')
+<QuerySet [{'title': 'Task', 'issues__count': 5}, {'title': 'Bug', 'issues__count': 3}, {'title': 'Enhancement', 'issues__count': 4}]>
